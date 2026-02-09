@@ -20,6 +20,34 @@ compromise if not properly handled.
 - Web browser
 - Linux shell utilities
 
+The semicolon (`;`) acts as a command separator, allowing the injected `ls -la`
+command to execute after the intended `ping` command. This resulted in the
+server displaying a directory listing, confirming command execution.
+
+## Impact
+- Arbitrary command execution
+- Exposure of sensitive system files
+- Potential system compromise
+- Denial of Service (DoS)
+
+## Mitigation
+The vulnerability was fixed by sanitising user input using PHP’s
+`escapeshellcmd()` function before executing the system command.
+
+Additional security measures include:
+- Strict input validation (allowlisting domains/IPs)
+- Using `escapeshellarg()` for arguments
+- Avoiding system commands where possible
+- Running services with least privilege
+
+## Outcome & Lessons Learned
+This project reinforced the importance of input validation and secure handling
+of user-supplied data. Even simple applications can become dangerous if user
+input is trusted blindly.
+
+## Disclaimer
+This project is for educational purposes only.
+
 ## Vulnerability Description
 The application accepts user input from a form and passes it directly into a
 system command (`ping`) using `shell_exec()` without validation or sanitization.
@@ -27,4 +55,26 @@ This allows attackers to inject additional shell commands.
 
 ## Exploitation
 The vulnerability was exploited by submitting the following payload:
+## Vulnerable-app/command.php
+<?php
+if (isset($_POST['domain'])) {
+    $domain = $_POST['domain'];
+
+    // Vulnerable to command injection
+    $output = shell_exec("ping -c 4 " . $domain);
+    echo "<pre>$output</pre>";
+}
+?>
+## fixed-app/command.php
+<?php
+if (isset($_POST['domain'])) {
+    $domain = $_POST['domain'];
+
+    // Mitigated version
+    $safe_domain = escapeshellcmd($domain);
+    $output = shell_exec("ping -c 4 " . $safe_domain);
+    echo "<pre>$output</pre>";
+}
+?>
+
 
