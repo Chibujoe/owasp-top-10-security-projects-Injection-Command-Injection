@@ -77,4 +77,8 @@ if (isset($_POST['domain'])) {
 }
 ?>
 
+## Screenshots
+<img width="736" height="427" alt="image" src="https://github.com/user-attachments/assets/c8ae0fb4-5427-4258-ad7e-d95ae1e62ace" />
+
+
 
